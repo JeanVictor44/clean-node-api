@@ -18,6 +18,10 @@
     "eslint-plugin-n": "^15.0.0",
     "eslint-plugin-promise": "^6.0.0",
     "git-commit-msg-linter": "^5.0.6",
+    "husky": "^8.0.3",
     "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "lint-staged": "^15.2.0"
   }
 }
