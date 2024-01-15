@@ -27,9 +27,6 @@ describe('SignUp Controller', () => {
   })
 
   test('should return 400 if no email is provided', () => {
-    /* como a implementação está amarrada a um retorno somos obrigados a implementar
-     um código que funcione no caso em que qualquer parâmetro obrigatório não seja fornecido
-    */
     const sut = new SignUpController()
     const httpRequest = {
       body: {
@@ -42,5 +39,19 @@ describe('SignUp Controller', () => {
     const httResponse = sut.handle(httpRequest)
     expect(httResponse.statusCode).toBe(400)
     expect(httResponse.body).toEqual(new MissingParamError('email'))
+  })
+  test('should return 400 if no password is provided', () => {
+    const sut = new SignUpController()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        passwordConfirmation: 'any_password'
+      }
+    }
+
+    const httResponse = sut.handle(httpRequest)
+    expect(httResponse.statusCode).toBe(400)
+    expect(httResponse.body).toEqual(new MissingParamError('password'))
   })
 })
