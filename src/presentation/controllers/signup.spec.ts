@@ -7,10 +7,13 @@ import { SignUpController } from './signup'
     Validar que os parâmetro irão vir corretamento do client(usuário)
     SUT -> system under test -> classe que está sendo testada no momento
 */
+const makeSut = (): SignUpController => {
+  return new SignUpController()
+}
 
 describe('SignUp Controller', () => {
   test('should return 400 if no name is provided', () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         email: 'any_email@mail.com',
@@ -27,7 +30,7 @@ describe('SignUp Controller', () => {
   })
 
   test('should return 400 if no email is provided', () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -41,7 +44,7 @@ describe('SignUp Controller', () => {
     expect(httResponse.body).toEqual(new MissingParamError('email'))
   })
   test('should return 400 if no password is provided', () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -55,7 +58,7 @@ describe('SignUp Controller', () => {
     expect(httResponse.body).toEqual(new MissingParamError('password'))
   })
   test('should return 400 if no passwordConfirmation is provided', () => {
-    const sut = new SignUpController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
