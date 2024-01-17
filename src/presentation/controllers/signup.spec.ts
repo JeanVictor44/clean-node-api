@@ -22,16 +22,6 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub()
 }
 
-const makeEmailValidatorWithError = (): EmailValidator => {
-  class EmailValidatorStub implements EmailValidator {
-    isValid (email: string): boolean {
-      throw new Error()
-    }
-  }
-
-  return new EmailValidatorStub()
-}
-
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator()
   const sut = new SignUpController(emailValidatorStub)
@@ -131,7 +121,7 @@ describe('SignUp Controller', () => {
     }
     sut.handle(httpRequest)
     /*
-      verifica se o método isActive foi chamado no handle do controller
+      verifica se o método isValid foi chamado no handle do controller
       com o email que passamos no httpRequest
     */
     expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')
@@ -139,8 +129,10 @@ describe('SignUp Controller', () => {
 
   // Garantir que o nosso controle está tratando as exceções disparadas nas camadas de baixo
   test('should return 500 if EmailValidator throws', () => {
-    const emailValidatorStub = makeEmailValidatorWithError()
-    const sut = new SignUpController(emailValidatorStub)
+    const { emailValidatorStub, sut } = makeSut()
+    jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
+      throw new Error()
+    })
     const httpRequest = {
       body: {
         name: 'any_name',
