@@ -2,30 +2,38 @@ import { InvalidParamError, MissingParamError, ServerError } from '../errors'
 import { EmailValidator } from '../protocols'
 import { SignUpController } from './signup'
 
-/* Rota de cadastro
-    Recebe -> nome/email/senha
-    retorna -> conta do usuário criada
-    Validar que os parâmetro irão vir corretamento do client(usuário)
-    SUT -> system under test -> classe que está sendo testada no momento
-*/
-// Esse factory diminui a repetição em precisar injetar as dependências em cada um dos testes
 interface SutTypes {
   sut: SignUpController
   emailValidatorStub: EmailValidator
 }
-const makeSut = (): SutTypes => {
+
+const makeEmailValidator = (): EmailValidator => {
   // STUB -> Funções com retornos predefinidos
   // Tanto faz a implementação do EmailValidator, só precisamos do retorno true ou false
   // para saber como o SignUpController irá lidar com esses dois retornos
+  // O ideal é que esse STUB sempre retorne true para os outros testes não quebarem
+  // Apenas em testes específicos invertemos o valor desse mock
+  // Sempre inicializar mock com o valor verdadeiro
   class EmailValidatorStub implements EmailValidator {
-    // O ideal é que esse STUB sempre retorne true para os outros testes não quebarem
-    // Apenas em testes específicos invertemos o valor desse mock
-    // Sempre inicializar mock com o valor verdadeiro
     isValid (email: string): boolean {
       return true
     }
   }
-  const emailValidatorStub = new EmailValidatorStub()
+  return new EmailValidatorStub()
+}
+
+const makeEmailValidatorWithError = (): EmailValidator => {
+  class EmailValidatorStub implements EmailValidator {
+    isValid (email: string): boolean {
+      throw new Error()
+    }
+  }
+
+  return new EmailValidatorStub()
+}
+
+const makeSut = (): SutTypes => {
+  const emailValidatorStub = makeEmailValidator()
   const sut = new SignUpController(emailValidatorStub)
 
   return {
@@ -131,12 +139,7 @@ describe('SignUp Controller', () => {
 
   // Garantir que o nosso controle está tratando as exceções disparadas nas camadas de baixo
   test('should return 500 if EmailValidator throws', () => {
-    class EmailValidatorStub implements EmailValidator {
-      isValid (email: string): boolean {
-        throw new Error()
-      }
-    }
-    const emailValidatorStub = new EmailValidatorStub()
+    const emailValidatorStub = makeEmailValidatorWithError()
     const sut = new SignUpController(emailValidatorStub)
     const httpRequest = {
       body: {
