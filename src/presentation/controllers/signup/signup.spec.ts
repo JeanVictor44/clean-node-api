@@ -1,13 +1,6 @@
-import { AccountModel } from '../../domain/models/account'
-import { AddAccount } from '../../domain/usecases/add-account'
-import { InvalidParamError, MissingParamError, ServerError } from '../errors'
-import { EmailValidator } from '../protocols'
+import { InvalidParamError, MissingParamError, ServerError } from '../../errors'
 import { SignUpController } from './signup'
-interface AddAccountModel {
-  name: string
-  email: string
-  password: string
-}
+import { AccountModel, AddAccountModel, AddAccount, EmailValidator } from './signup-protocols'
 
 interface SutTypes {
   sut: SignUpController
@@ -16,13 +9,6 @@ interface SutTypes {
 }
 
 const makeEmailValidator = (): EmailValidator => {
-  // STUB -> Funções com retornos predefinidos
-  // Tanto faz a implementação do EmailValidator, só precisamos do retorno true ou false
-  // para saber como o SignUpController irá lidar com esses dois retornos
-  // O ideal é que esse STUB sempre retorne true para os outros testes não quebarem
-  // Apenas em testes específicos invertemos o valor desse mock
-  // Sempre inicializar mock com o valor verdadeiro
-
   class EmailValidatorStub implements EmailValidator {
     isValid (email: string): boolean {
       return true
